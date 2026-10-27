@@ -1,1 +1,205 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Study AI | Raja</title>
+<style>
+:root{--blue:#3157d5;--bg:#f4f6ff;--ink:#202947}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#2446b5,#7188ff);color:white;padding:24px 18px;border-radius:0 0 24px 24px}
+header h1{margin:0 0 8px;font-size:27px}
+header p{margin:0;line-height:1.5}
+main{max-width:700px;margin:auto;padding:16px}
+.card{background:white;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 4px 16px #243b8010}
+h2{font-size:20px;margin:0 0 14px}
+label{display:block;font-weight:bold;margin:12px 0 7px}
+select,button{width:100%;padding:13px;border-radius:10px;font-size:16px}
+select{border:1px solid #ccd3e8;background:white}
+button{border:0;background:var(--blue);color:white;font-weight:bold;cursor:pointer;margin-top:10px}
+button.secondary{background:#e9edff;color:#2446b5}
+button:disabled{opacity:.55}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#edf1ff;padding:14px;border-radius:12px;text-align:center}
+.stat strong{display:block;font-size:25px;color:var(--blue);margin-bottom:5px}
+#question{font-weight:bold;line-height:1.5;margin-bottom:12px}
+.answer{display:block;width:100%;text-align:left;background:#eef1fa;color:#202947;margin:8px 0;border:2px solid transparent}
+.answer.selected{border-color:var(--blue);background:#e3eaff}
+.answer.correct{background:#d9f8e5;border-color:#199653}
+.answer.wrong{background:#ffe2e2;border-color:#d83232}
+.small{font-size:13px;color:#64708b;line-height:1.5}
+footer{text-align:center;padding:22px 14px;color:#58627c;font-size:14px;line-height:1.8}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 Smart Study AI</h1>
+  <p id="tagline">Learn every day. Improve every day!</p>
+  <p>✨ Your free study companion</p>
+</header>
+
+<main>
+  <section class="card">
+    <h2 id="settingsTitle">🎯 Your Study Space</h2>
+    <label id="langLabel" for="language">Language / भाषा</label>
+    <select id="language" onchange="changeLanguage()">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी</option>
+    </select>
+    <label id="classLabel" for="grade">Choose your class</label>
+    <select id="grade">
+      <option value="1">Class 1</option><option value="2">Class 2</option>
+      <option value="3">Class 3</option><option value="4">Class 4</option>
+      <option value="5">Class 5</option><option value="6">Class 6</option>
+      <option value="7">Class 7</option><option value="8">Class 8</option>
+      <option value="9">Class 9</option><option value="10">Class 10</option>
+    </select>
+    <label id="subjectLabel" for="subject">Choose a subject</label>
+    <select id="subject">
+      <option value="math">Mathematics</option>
+      <option value="science">Science</option>
+      <option value="english">English</option>
+      <option value="general">General Knowledge</option>
+    </select>
+    <button onclick="startQuiz()" id="startBtn">Start Quiz 🚀</button>
+  </section>
+
+  <section class="card">
+    <h2 id="progressTitle">📊 Your Progress</h2>
+    <div class="stats">
+      <div class="stat"><strong id="total">0</strong><span id="attemptsLabel">Quizzes completed</span></div>
+      <div class="stat"><strong id="best">0%</strong><span id="bestLabel">Best score</span></div>
+    </div>
+    <button class="secondary" onclick="resetProgress()" id="resetBtn">Reset progress</button>
+  </section>
+
+  <section class="card hidden" id="quizCard">
+    <h2 id="quizTitle">📝 Quick Quiz</h2>
+    <p class="small" id="quizInfo"></p>
+    <div id="question"></div>
+    <div id="answers"></div>
+    <p id="feedback" aria-live="polite"></p>
+    <button id="nextBtn" onclick="nextQuestion()" disabled>Next question ➜</button>
+    <button class="secondary hidden" id="finishBtn" onclick="finishQuiz()">Finish quiz</button>
+  </section>
+
+  <section class="card">
+    <h2 id="helperTitle">💡 Study Helper</h2>
+    <p id="helperText">Choose a subject and try a quiz. This starter version has sample questions and study tips; live AI chat is not connected yet.</p>
+    <label id="topicLabel" for="topic">What do you want to study?</label>
+    <select id="topic">
+      <option value="math">Mathematics</option>
+      <option value="science">Science</option>
+      <option value="english">English</option>
+      <option value="general">General Knowledge</option>
+    </select>
+    <button class="secondary" onclick="showTip()" id="tipBtn">Show a study tip</button>
+    <p id="tipResult" aria-live="polite"></p>
+  </section>
+</main>
+
+<footer>
+  <strong>Created by Raja</strong><br>
+  Student of Sacred Heart Model School<br>
+  <span id="footerNote">Keep learning. Keep growing! 🌟</span>
+</footer>
+
+<script>
+const bank={
+ math:[
+  {q:"What is 7 + 5?",o:["10","12","13","14"],a:1,why:"7 + 5 = 12."},
+  {q:"What is 9 × 3?",o:["18","21","27","36"],a:2,why:"9 multiplied by 3 equals 27."},
+  {q:"What is half of 20?",o:["5","10","15","20"],a:1,why:"20 divided by 2 equals 10."},
+  {q:"Which is an even number?",o:["7","11","14","19"],a:2,why:"14 is divisible by 2."},
+  {q:"What is 100 − 35?",o:["55","65","75","85"],a:1,why:"100 − 35 = 65."}
+ ],
+ science:[
+  {q:"Which planet do we live on?",o:["Mars","Earth","Venus","Jupiter"],a:1,why:"We live on planet Earth."},
+  {q:"Which part of a plant absorbs water?",o:["Flower","Leaf","Root","Fruit"],a:2,why:"Roots absorb water from the soil."},
+  {q:"What is the main source of light for Earth?",o:["Moon","Sun","Mars","Stars only"],a:1,why:"The Sun is Earth's main natural light source."},
+  {q:"Which gas do humans need to breathe?",o:["Oxygen","Helium","Neon","Hydrogen"],a:0,why:"Humans need oxygen for respiration."},
+  {q:"Water freezes at what temperature in Celsius?",o:["0°C","10°C","50°C","100°C"],a:0,why:"Pure water freezes at 0°C under standard pressure."}
+ ],
+ english:[
+  {q:"What is the plural of 'child'?",o:["Childs","Children","Childes","Childrens"],a:1,why:"The plural of child is children."},
+  {q:"Choose the noun.",o:["Quickly","Beautiful","Teacher","Run"],a:2,why:"Teacher is a noun naming a person."},
+  {q:"Which word means the opposite of 'hot'?",o:["Warm","Cold","Heat","Boil"],a:1,why:"Cold is the opposite of hot."},
+  {q:"Complete: She ___ happy.",o:["are","am","is","be"],a:2,why:"Use 'is' with she."},
+  {q:"What is the past tense of 'go'?",o:["Goed","Gone","Went","Going"],a:2,why:"The simple past tense of go is went."}
+ ],
+ general:[
+  {q:"What is the capital of India?",o:["Mumbai","New Delhi","Chennai","Jaipur"],a:1,why:"New Delhi is the capital of India."},
+  {q:"How many days are there in a week?",o:["5","6","7","8"],a:2,why:"A week has seven days."},
+  {q:"Which is the largest ocean?",o:["Indian","Arctic","Atlantic","Pacific"],a:3,why:"The Pacific Ocean is the largest."},
+  {q:"How many colours are traditionally named in a rainbow?",o:["5","6","7","8"],a:2,why:"A rainbow is traditionally described as having seven colours."},
+  {q:"Which animal is known as the king of the jungle?",o:["Tiger","Lion","Elephant","Bear"],a:1,why:"The lion is commonly called the king of the jungle."}
+ ]
+};
+
+const words={
+ en:{tag:"Learn every day. Improve every day!",settings:"🎯 Your Study Space",lang:"Language / भाषा",cls:"Choose your class",sub:"Choose a subject",start:"Start Quiz 🚀",progress:"📊 Your Progress",attempts:"Quizzes completed",best:"Best score",reset:"Reset progress",quiz:"📝 Quick Quiz",next:"Next question ➜",finish:"Finish quiz",helper:"💡 Study Helper",helperText:"This starter version has sample questions and study tips. Live AI chat is not connected yet.",topic:"What do you want to study?",tip:"Show a study tip",footer:"Keep learning. Keep growing! 🌟",correct:"Correct! Great work! 🎉",wrong:"Not quite. Review the explanation below.",score:"Your score",done:"Quiz complete!",tips:{math:"Practise a few problems daily and show every step.",science:"Connect each science idea to something you see in everyday life.",english:"Read a little every day and learn new words in sentences.",general:"Learn one new fact every day and review it tomorrow."}},
+ hi:{tag:"हर दिन सीखें, हर दिन आगे बढ़ें!",settings:"🎯 आपकी पढ़ाई",lang:"भाषा / Language",cls:"अपनी कक्षा चुनें",sub:"विषय चुनें",start:"क्विज़ शुरू करें 🚀",progress:"📊 आपकी प्रगति",attempts:"पूरे किए गए क्विज़",best:"सबसे अच्छा स्कोर",reset:"प्रगति रीसेट करें",quiz:"📝 छोटा क्विज़",next:"अगला सवाल ➜",finish:"क्विज़ पूरा करें",helper:"💡 पढ़ाई सहायक",helperText:"इस शुरुआती संस्करण में नमूना प्रश्न और पढ़ाई के सुझाव हैं। लाइव AI चैट अभी जुड़ी नहीं है।",topic:"आप क्या पढ़ना चाहते हैं?",tip:"पढ़ाई का सुझाव देखें",footer:"सीखते रहें, आगे बढ़ते रहें! 🌟",correct:"सही जवाब! बहुत बढ़िया! 🎉",wrong:"जवाब सही नहीं है। नीचे दिया गया कारण पढ़ें।",score:"आपका स्कोर",done:"क्विज़ पूरा हुआ!",tips:{math:"रोज़ कुछ गणित के सवाल हल करें और हर चरण लिखें।",science:"विज्ञान की बातों को रोज़मर्रा की चीज़ों से जोड़कर समझें।",english:"हर दिन थोड़ा पढ़ें और नए शब्द वाक्यों में सीखें।",general:"हर दिन एक नया तथ्य सीखें और अगले दिन दोहराएँ।"}}
+};
+
+let questions=[],pos=0,score=0,answered=false;
+let stats=loadStats();
+function loadStats(){try{return JSON.parse(localStorage.getItem("ssa-stats"))||{total:0,best:0}}catch(e){return {total:0,best:0}}}
+function saveStats(){try{localStorage.setItem("ssa-stats",JSON.stringify(stats))}catch(e){}}
+function renderStats(){document.getElementById("total").textContent=stats.total;document.getElementById("best").textContent=stats.best+"%"}
+function changeLanguage(){
+ const w=words[document.getElementById("language").value];
+ const ids={tagline:"tag",settingsTitle:"settings",langLabel:"lang",classLabel:"cls",subjectLabel:"sub",startBtn:"start",progressTitle:"progress",attemptsLabel:"attempts",bestLabel:"best",resetBtn:"reset",quizTitle:"quiz",nextBtn:"next",finishBtn:"finish",helperTitle:"helper",helperText:"helperText",topicLabel:"topic",tipBtn:"tip",footerNote:"footer"};
+ for(const [id,key] of Object.entries(ids))document.getElementById(id).textContent=w[key];
+}
+function startQuiz(){
+ const sub=document.getElementById("subject").value;
+ questions=bank[sub].map(x=>({...x})).sort(()=>Math.random()-.5).slice(0,5);
+ pos=0;score=0;answered=false;
+ document.getElementById("quizCard").classList.remove("hidden");
+ document.getElementById("finishBtn").classList.add("hidden");
+ showQuestion();
+ document.getElementById("quizCard").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function showQuestion(){
+ const q=questions[pos];answered=false;
+ const hi=document.getElementById("language").value==="hi";
+ document.getElementById("quizInfo").textContent=(hi?"कक्षा ":"Class ")+document.getElementById("grade").value+" • "+(pos+1)+"/"+questions.length;
+ document.getElementById("question").textContent=q.q;
+ document.getElementById("answers").innerHTML="";
+ document.getElementById("feedback").textContent="";
+ q.o.forEach((op,i)=>{
+  const b=document.createElement("button");b.className="answer";b.textContent=String.fromCharCode(65+i)+". "+op;
+  b.onclick=()=>chooseAnswer(i,b);document.getElementById("answers").appendChild(b);
+ });
+ document.getElementById("nextBtn").disabled=true;
+ document.getElementById("nextBtn").classList.toggle("hidden",pos===questions.length-1);
+ document.getElementById("finishBtn").classList.toggle("hidden",pos!==questions.length-1);
+}
+function chooseAnswer(i,b){
+ if(answered)return;answered=true;
+ const q=questions[pos],hi=document.getElementById("language").value==="hi";
+ document.querySelectorAll(".answer").forEach((el,j)=>{el.disabled=true;if(j===q.a)el.classList.add("correct")});
+ if(i===q.a){score++;document.getElementById("feedback").textContent=words[hi?"hi":"en"].correct+" "+q.why}
+ else{b.classList.add("wrong");document.getElementById("feedback").textContent=words[hi?"hi":"en"].wrong+" "+q.why}
+ document.getElementById("nextBtn").disabled=false;
+}
+function nextQuestion(){if(!answered)return;pos++;showQuestion()}
+function finishQuiz(){
+ if(!answered)return;
+ const pct=Math.round(score/questions.length*100);
+ stats.total++;stats.best=Math.max(stats.best,pct);saveStats();renderStats();
+ const hi=document.getElementById("language").value==="hi";
+ document.getElementById("question").textContent=words[hi?"hi":"en"].done+" "+words[hi?"hi":"en"].score+": "+score+"/"+questions.length+" ("+pct+"%)";
+ document.getElementById("answers").innerHTML="";
+ document.getElementById("feedback").textContent=pct>=80?(hi?"बहुत बढ़िया!":"Excellent work!"):pct>=50?(hi?"अच्छी कोशिश! अभ्यास जारी रखें।":"Good effort! Keep practising."): (hi?"दोबारा अभ्यास करें, आप बेहतर कर सकते हैं।":"Keep practising—you can improve!");
+ document.getElementById("nextBtn").classList.add("hidden");document.getElementById("finishBtn").classList.add("hidden");
+}
+function resetProgress(){if(confirm("Reset your saved quiz progress on this device?")){stats={total:0,best:0};saveStats();renderStats()}}
+function showTip(){const hi=document.getElementById("language").value==="hi";const key=document.getElementById("topic").value;document.getElementById("tipResult").textContent=words[hi?"hi":"en"].tips[key]}
+renderStats();changeLanguage();
+</script>
+</body>
+  </html>

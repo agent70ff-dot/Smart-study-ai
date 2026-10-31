@@ -518,6 +518,57 @@ showDailyJoke();
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+const nameInput = document.getElementById("studentName");
+const emailInput = document.getElementById("studentEmail");
+const passwordInput = document.getElementById("studentPassword");
+const message = document.getElementById("accountMessage");
+
+document.getElementById("signupBtn").onclick = async () => {
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!name || !email || password.length < 6) {
+    message.textContent = "Enter your name, email and password (6+ characters).";
+    return;
+  }
+
+  try {
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(result.user, { displayName: name });
+    message.textContent = "Account created successfully! Welcome, " + name;
+  } catch (error) {
+    message.textContent = error.message;
+  }
+};
+
+document.getElementById("loginBtn").onclick = async () => {
+  try {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    await signInWithEmailAndPassword(auth, email, password);
+    message.textContent = "Login successful!";
+  } catch (error) {
+    message.textContent = error.message;
+  }
+};
+
+document.getElementById("logoutBtn").onclick = async () => {
+  await signOut(auth);
+  message.textContent = "You have logged out.";
+};
+
+onAuthStateChanged(auth, (user) => {
+  document.getElementById("signupBtn").hidden = !!user;
+  document.getElementById("loginBtn").hidden = !!user;
+  document.getElementById("logoutBtn").hidden = !user;
+
+  if (user) {
+    message.textContent = "Welcome, " + (user.displayName || user.email);
+  }
+});
   const analytics = getAnalytics(app);
   </script>
 </body>

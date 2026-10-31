@@ -39,7 +39,44 @@ footer{text-align:center;padding:24px 14px;color:#58627c;font-size:14px;line-hei
   <p id="tagline">Learn every day. Improve every day!</p>
   <p>✨ Your free study companion</p>
 </header>
+<section class="card" id="accountSection">
+  <h2>🔐 Student Account</h2>
+  <p>Create your account or login to continue.</p>
 
+  <input
+    id="studentName"
+    type="text"
+    placeholder="Your name (for signup)"
+  >
+
+  <input
+    id="studentEmail"
+    type="email"
+    placeholder="Email address"
+  >
+
+  <input
+    id="studentPassword"
+    type="password"
+    placeholder="Password (minimum 6 characters)"
+  >
+
+  <button type="button" id="signupBtn">
+    Create Account
+  </button>
+
+  <button type="button" id="loginBtn">
+    Login
+  </button>
+
+  <button type="button" id="logoutBtn" hidden>
+    Logout
+  </button>
+
+  <p id="accountMessage" aria-live="polite">
+    Welcome to Smart Study AI!
+  </p>
+    </section>
 <main>
 <section class="card">
   <h2 id="studyTitle">🎯 Your Study Space</h2>

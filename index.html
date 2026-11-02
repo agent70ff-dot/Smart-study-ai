@@ -526,6 +526,7 @@ import {
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
     const auth = getAuth(app);
 const nameInput = document.getElementById("studentName");
 const emailInput = document.getElementById("studentEmail");

@@ -433,15 +433,12 @@ if (window.syncLeaderboardProfile) {
 }
   }
 
-function addPlayerPoints(points){
-const name=localStorage.getItem("ssa-nickname");
-if(!name)return;
-const board=readBoard();
-let p=board.find(x=>x.name.toLowerCase()===name.toLowerCase());
-if(!p){p={name:name,points:0};board.push(p)}
-p.points+=points;
-saveBoard(board);
-renderLeaderboard();
+function addPlayerPoints(points) {
+  if (window.addGlobalPlayerPoints) {
+    window.addGlobalPlayerPoints(points);
+  } else {
+    alert("Please wait for Firebase to load.");
+  }
   }
 function renderLeaderboard(){
 const saved=localStorage.getItem("ssa-nickname")||"";

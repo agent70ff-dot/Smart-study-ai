@@ -437,7 +437,7 @@ if(!p){p={name:name,points:0};board.push(p)}
 p.points+=points;
 saveBoard(board);
 renderLeaderboard();
-}
+  }
 function renderLeaderboard(){
 const saved=localStorage.getItem("ssa-nickname")||"";
 document.getElementById("playerName").value=saved;

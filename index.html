@@ -427,7 +427,12 @@ if(!name){alert("Please enter a nickname first!");return}
 localStorage.setItem("ssa-nickname",name);
 document.getElementById("nicknameMessage").textContent="Nickname saved! Start earning points ⭐";
 renderLeaderboard();
+
+if (window.syncLeaderboardProfile) {
+  window.syncLeaderboardProfile(name);
 }
+  }
+
 function addPlayerPoints(points){
 const name=localStorage.getItem("ssa-nickname");
 if(!name)return;

@@ -534,7 +534,123 @@ const nameInput = document.getElementById("studentName");
 const emailInput = document.getElementById("studentEmail");
 const passwordInput = document.getElementById("studentPassword");
 const message = document.getElementById("accountMessage");
+let leaderboardUnsubscribe = null;
 
+async function ensureLeaderboardUser(user) {
+  const userRef = doc(db, "leaderboard", user.uid);
+  const userSnap = await getDoc(userRef);
+
+  const nickname =
+    localStorage.getItem("ssa-nickname") ||
+    user.displayName ||
+    "Student";
+
+  if (!userSnap.exists()) {
+    await setDoc(userRef, {
+      nickname: nickname,
+      points: 0
+    });
+  } else {
+    await setDoc(userRef, {
+      nickname: nickname,
+      points: userSnap.data().points
+    }, { merge: true });
+  }
+}
+
+window.addGlobalPlayerPoints = async function(points) {
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Please login first to earn leaderboard points!");
+    return;
+  }
+
+  try {
+    await ensureLeaderboardUser(user);
+
+    const userRef = doc(db, "leaderboard", user.uid);
+    const userSnap = await getDoc(userRef);
+    const currentPoints = userSnap.data().points || 0;
+
+    await setDoc(userRef, {
+      nickname: localStorage.getItem("ssa-nickname") ||
+                user.displayName || "Student",
+      points: currentPoints + points
+    }, { merge: true });
+
+  } catch (error) {
+    alert("Points could not be saved: " + error.message);
+  }
+};
+
+window.syncLeaderboardProfile = async function(name) {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    await ensureLeaderboardUser(user);
+
+    const userRef = doc(db, "leaderboard", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    await setDoc(userRef, {
+      nickname: name,
+      points: userSnap.data().points || 0
+    }, { merge: true });
+
+  } catch (error) {
+    console.error("Nickname sync error:", error);
+  }
+};
+
+onAuthStateChanged(auth, async (user) => {
+  if (leaderboardUnsubscribe) {
+    leaderboardUnsubscribe();
+    leaderboardUnsubscribe = null;
+  }
+
+  const list = document.getElementById("leaderboardList");
+  if (!list) return;
+
+  if (!user) {
+    list.textContent = "Login to join the global leaderboard.";
+    return;
+  }
+
+  try {
+    await ensureLeaderboardUser(user);
+
+    const boardQuery = query(
+      collection(db, "leaderboard"),
+      orderBy("points", "desc")
+    );
+
+    leaderboardUnsubscribe = onSnapshot(boardQuery, (snapshot) => {
+      list.innerHTML = "";
+
+      if (snapshot.empty) {
+        list.textContent = "Be the first to earn points!";
+        return;
+      }
+
+      snapshot.docs.slice(0, 10).forEach((item, index) => {
+        const player = item.data();
+        const row = document.createElement("p");
+        const medal = ["🥇", "🥈", "🥉"][index] || (index + 1) + ".";
+        row.textContent =
+          medal + " " + player.nickname + " — " +
+          player.points + " points";
+        list.appendChild(row);
+      });
+    }, (error) => {
+      list.textContent = "Leaderboard error: " + error.message;
+    });
+
+  } catch (error) {
+    list.textContent = "Could not load leaderboard: " + error.message;
+  }
+});
 document.getElementById("signupBtn").onclick = async () => {
   const name = nameInput.value.trim();
   const email = emailInput.value.trim();

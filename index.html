@@ -715,20 +715,24 @@ onAuthStateChanged(auth, (user) => {
 
   musicButton.innerHTML = "🎵 Play Music";
   musicButton.style.cssText = `
-    position: fixed;
-    bottom: 20px;
-    right: 18px;
-    z-index: 99999;
-    padding: 13px 20px;
-    border: none;
-    border-radius: 30px;
-    background: #243b80;
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    box-shadow: 0 4px 12px #0005;
-    cursor: pointer;
-  `;
+  position: fixed !important;
+  bottom: 15px !important;
+  right: 12px !important;
+  left: auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  padding: 9px 15px !important;
+  border: none !important;
+  border-radius: 30px !important;
+  background: #243b80 !important;
+  color: white !important;
+  font-size: 13px !important;
+  font-weight: bold !important;
+  display: inline-flex !important;
+  z-index: 99999 !important;
+  box-shadow: 0 3px 10px #0003 !important;
+`;
 
   document.body.appendChild(musicButton);
 

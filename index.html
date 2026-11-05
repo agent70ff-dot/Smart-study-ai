@@ -698,6 +698,95 @@ onAuthStateChanged(auth, (user) => {
   }
 });
   const analytics = getAnalytics(app);
+    // ===== SMART STUDY AI RELAXING MUSIC =====
+(() => {
+  let audioContext;
+  let masterGain;
+  let musicTimer;
+  let playing = false;
+  let noteIndex = 0;
+
+  const notes = [
+    261.63, 329.63, 392.00, 329.63,
+    293.66, 349.23, 440.00, 349.23
+  ];
+
+  const musicButton = document.createElement("button");
+
+  musicButton.innerHTML = "🎵 Play Music";
+  musicButton.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 18px;
+    z-index: 99999;
+    padding: 13px 20px;
+    border: none;
+    border-radius: 30px;
+    background: #243b80;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px #0005;
+    cursor: pointer;
+  `;
+
+  document.body.appendChild(musicButton);
+
+  function playNote() {
+    if (!audioContext || !playing) return;
+
+    const oscillator = audioContext.createOscillator();
+    const volume = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.value = notes[noteIndex];
+
+    const now = audioContext.currentTime;
+
+    volume.gain.setValueAtTime(0, now);
+    volume.gain.linearRampToValueAtTime(0.045, now + 0.5);
+    volume.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
+
+    oscillator.connect(volume);
+    volume.connect(masterGain);
+
+    oscillator.start(now);
+    oscillator.stop(now + 2.6);
+
+    noteIndex = (noteIndex + 1) % notes.length;
+  }
+
+  musicButton.onclick = async () => {
+    if (!playing) {
+      audioContext = new (
+        window.AudioContext || window.webkitAudioContext
+      )();
+
+      await audioContext.resume();
+
+      masterGain = audioContext.createGain();
+      masterGain.gain.value = 0.35;
+      masterGain.connect(audioContext.destination);
+
+      playing = true;
+      playNote();
+
+      musicTimer = setInterval(playNote, 1800);
+      musicButton.innerHTML = "⏸ Pause Music";
+    } else {
+      playing = false;
+      clearInterval(musicTimer);
+
+      musicButton.innerHTML = "🎵 Play Music";
+
+      const oldContext = audioContext;
+      audioContext = null;
+
+      if (oldContext) await oldContext.close();
+    }
+  };
+})();
+// ===== END RELAXING MUSIC =====
   </script>
 </body>
                                                                  </html>

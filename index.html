@@ -790,6 +790,48 @@ onAuthStateChanged(auth, (user) => {
   };
 })();
 // ===== END RELAXING MUSIC =====
+ window.getFreshQuizQuestions = async function(subject, questionBank) {
+  const user = auth.currentUser;
+
+  if (!user) {
+    throw new Error("Please login first!");
+  }
+
+  const historyRef = doc(
+    db,
+    "quizHistory",
+    user.uid + "_" + subject
+  );
+
+  const historySnap = await getDoc(historyRef);
+
+  let used = historySnap.exists()
+    ? historySnap.data().usedQuestions || []
+    : [];
+
+  let available = questionBank.filter(
+    q => !used.includes(q.q)
+  );
+
+  if (available.length === 0) {
+    used = [];
+    available = questionBank.slice();
+  }
+
+  available.sort(() => Math.random() - 0.5);
+
+  const selected = available.slice(0, 5);
+
+  await setDoc(historyRef, {
+    usedQuestions: [
+      ...used,
+      ...selected.map(q => q.q)
+    ],
+    subject: subject
+  });
+
+  return selected;
+};
   </script>
 </body>
                                                                  </html>

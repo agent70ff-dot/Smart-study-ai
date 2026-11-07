@@ -817,48 +817,56 @@ onAuthStateChanged(auth, (user) => {
   };
 })();
 // ===== END RELAXING MUSIC =====
- window.getFreshQuizQuestions = async function(subject, questionBank) {
-  const user = auth.currentUser;
+window.getFreshQuizQuestions = async function(subject, questionBank) {
+  const user = window.auth.currentUser;
 
   if (!user) {
     throw new Error("Please login first!");
   }
 
-  const historyRef = doc(
-    db,
+  const historyRef = window.doc(
+    window.db,
     "quizHistory",
     user.uid + "_" + subject
   );
 
-  const historySnap = await getDoc(historyRef);
+  const historySnap = await window.getDoc(historyRef);
 
   let used = historySnap.exists()
     ? historySnap.data().usedQuestions || []
     : [];
 
   let available = questionBank.filter(
-    q => !used.includes(q.q)
+    question => !used.includes(question.q)
   );
 
+  // Start a new cycle when all questions are used
   if (available.length === 0) {
     used = [];
     available = questionBank.slice();
   }
 
-  available.sort(() => Math.random() - 0.5);
+  // Shuffle questions randomly
+  for (let i = available.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [available[i], available[j]] =
+      [available[j], available[i]];
+  }
 
   const selected = available.slice(0, 5);
 
-  await setDoc(historyRef, {
+  await window.setDoc(historyRef, {
+    uid: user.uid,
+    subject: subject,
     usedQuestions: [
       ...used,
-      ...selected.map(q => q.q)
+      ...selected.map(question => question.q)
     ],
-    subject: subject
+    updatedAt: Date.now()
   });
 
   return selected;
-};
+}; 
   </script>
 </body>
                                                                  </html>

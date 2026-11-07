@@ -341,19 +341,41 @@ const w=words[getLang()];
 const ids={tagline:"tag",studyTitle:"study",languageLabel:"lang",classLabel:"cls",subjectLabel:"sub",startBtn:"start",progressTitle:"progress",attemptsLabel:"attempts",bestLabel:"best",resetBtn:"reset",quizTitle:"quiz",nextBtn:"next",finishBtn:"finish",helperTitle:"helper",helperText:"helperText",topicLabel:"topic",tipBtn:"tip",footerNote:"footer"};
 Object.entries(ids).forEach(([id,key])=>document.getElementById(id).textContent=w[key]);
 }
-function startQuiz(){
-if(!localStorage.getItem("ssa-nickname")){
-alert("Please save your nickname in the Leaderboard first!");
-document.getElementById("leaderboardCard").scrollIntoView({behavior:"smooth"});
-return;
-}
-const sub=document.getElementById("subject").value;
-questions=bank[sub].slice().sort(()=>Math.random()-.5).slice(0,5);
-pos=0;score=0;answered=false;
-document.getElementById("quizCard").hidden=false;
-showQuestion();
-document.getElementById("quizCard").scrollIntoView({behavior:"smooth",block:"start"});
-}
+async function startQuiz() {
+  if (!localStorage.getItem("ssa-nickname")) {
+    alert("Please save your nickname in the Leaderboard first!");
+    document.getElementById("leaderboardCard").scrollIntoView({
+      behavior: "smooth"
+    });
+    return;
+  }
+
+  try {
+    const sub = document.getElementById("subject").value;
+
+    if (!auth.currentUser) {
+      alert("Please login first!");
+      return;
+    }
+
+    questions = await window.getFreshQuizQuestions(sub, bank[sub]);
+
+    pos = 0;
+    score = 0;
+    answered = false;
+
+    document.getElementById("quizCard").hidden = false;
+    showQuestion();
+
+    document.getElementById("quizCard").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  } catch (error) {
+    alert("Quiz error: " + error.message);
+  }
+  }
 function showQuestion(){
 const q=questions[pos];
 answered=false;

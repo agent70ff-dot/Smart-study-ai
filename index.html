@@ -847,98 +847,52 @@ onAuthStateChanged(auth, (user) => {
   }
 });
   const analytics = getAnalytics(app);
-    // ===== SMART STUDY AI RELAXING MUSIC =====
+    
+// ===== ROOFTOP GARDEN STUDY MUSIC =====//
 (() => {
-  let audioContext;
-  let masterGain;
-  let musicTimer;
-  let playing = false;
-  let noteIndex = 0;
+  const music = new Audio(
+    "https://github.com/agent70ff-dot/Smart-study-ai/raw/refs/heads/main/rooftop-garden-study-break-ii_9f179c77%20(1).mp3"
+  );
 
-  const notes = [
-    261.63, 329.63, 392.00, 329.63,
-    293.66, 349.23, 440.00, 349.23
-  ];
+  music.loop = true;
+  music.volume = 0.35;
 
   const musicButton = document.createElement("button");
+  musicButton.innerHTML = "♫ Play Music";
 
-  musicButton.innerHTML = "🎵 Play Music";
   musicButton.style.cssText = `
-  position: fixed !important;
-  bottom: 12px !important;
-  right: 12px !important;
-  width: 105px !important;
-  height: 36px !important;
-  padding: 0 !important;
-  border: none !important;
-  border-radius: 22px !important;
-  background: #243b80 !important;
-  color: white !important;
-  font-size: 11px !important;
-  font-weight: bold !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 99999 !important;
-`;
+    position: fixed !important;
+    bottom: 15px !important;
+    right: 12px !important;
+    width: auto !important;
+    padding: 9px 15px !important;
+    border: none !important;
+    border-radius: 30px !important;
+    background: #243b80 !important;
+    color: white !important;
+    font-size: 13px !important;
+    font-weight: bold !important;
+    z-index: 99999 !important;
+    box-shadow: 0 3px 10px #0003 !important;
+  `;
 
   document.body.appendChild(musicButton);
 
-  function playNote() {
-    if (!audioContext || !playing) return;
-
-    const oscillator = audioContext.createOscillator();
-    const volume = audioContext.createGain();
-
-    oscillator.type = "sine";
-    oscillator.frequency.value = notes[noteIndex];
-
-    const now = audioContext.currentTime;
-
-    volume.gain.setValueAtTime(0, now);
-    volume.gain.linearRampToValueAtTime(0.045, now + 0.5);
-    volume.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
-
-    oscillator.connect(volume);
-    volume.connect(masterGain);
-
-    oscillator.start(now);
-    oscillator.stop(now + 2.6);
-
-    noteIndex = (noteIndex + 1) % notes.length;
-  }
-
   musicButton.onclick = async () => {
-    if (!playing) {
-      audioContext = new (
-        window.AudioContext || window.webkitAudioContext
-      )();
-
-      await audioContext.resume();
-
-      masterGain = audioContext.createGain();
-      masterGain.gain.value = 0.35;
-      masterGain.connect(audioContext.destination);
-
-      playing = true;
-      playNote();
-
-      musicTimer = setInterval(playNote, 1800);
-      musicButton.innerHTML = "⏸ Pause Music";
+    if (music.paused) {
+      try {
+        await music.play();
+        musicButton.innerHTML = "Ⅱ Pause Music";
+      } catch (error) {
+        alert("Music could not play. Please try again.");
+      }
     } else {
-      playing = false;
-      clearInterval(musicTimer);
-
-      musicButton.innerHTML = "🎵 Play Music";
-
-      const oldContext = audioContext;
-      audioContext = null;
-
-      if (oldContext) await oldContext.close();
+      music.pause();
+      musicButton.innerHTML = "♫ Play Music";
     }
   };
 })();
-// ===== END RELAXING MUSIC =====
+// ===== END ROOFTOP GARDEN MUSIC =====//
 window.getFreshQuizQuestions = async function(subject, questionBank) {
   const user = window.auth.currentUser;
 

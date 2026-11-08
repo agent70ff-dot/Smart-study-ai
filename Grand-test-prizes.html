@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Annual Grand Test | Smart Study AI</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #101d45, #183b70);
+  color: white;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.container {
+  max-width: 650px;
+  margin: 35px auto;
+  padding: 28px 20px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 22px;
+}
+
+.trophy {
+  font-size: 65px;
+}
+
+h1 {
+  color: #ffd166;
+  font-size: 30px;
+}
+
+.subtitle {
+  color: #d8e7ff;
+  line-height: 1.7;
+}
+
+.info {
+  margin: 22px 0;
+  padding: 18px;
+  background: rgba(255,255,255,0.10);
+  border-radius: 14px;
+  line-height: 1.9;
+  text-align: left;
+}
+
+.info h3 {
+  color: #ffd166;
+  text-align: center;
+}
+
+.status {
+  margin: 22px 0;
+  padding: 16px;
+  background: #102d52;
+  border-radius: 12px;
+  color: #ffd166;
+  font-weight: bold;
+}
+
+.start-btn {
+  display: inline-block;
+  padding: 15px 30px;
+  background: #ffd166;
+  color: #17223b;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.start-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.credit {
+  margin-top: 30px;
+  color: #cbd8ed;
+  font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="trophy">🏆</div>
+
+  <h1>Annual Grand Test</h1>
+
+  <p class="subtitle">
+    Welcome to the biggest yearly academic competition
+    of Smart Study AI!
+  </p>
+
+  <div class="info">
+    <h3>📚 About the Grand Test</h3>
+
+    <p>• This test is for Classes 8th, 9th and 10th.</p>
+
+    <p>• All three classes will participate in the same test.</p>
+
+    <p>• There will be only 3 winners across all three classes.</p>
+
+    <p>• The Top 3 students will receive certificates.</p>
+
+    <p>• This Grand Test will be organised once every year.</p>
+  </div>
+
+  <div class="status" id="testStatus">
+    📅 Grand Test is held once every year.
+    <br>
+    Test start date will be announced soon!
+  </div>
+
+  <button id="startButton" class="start-btn" hidden
+    onclick="alert('Grand Test questions will be added soon!')">
+    🚀 Start Grand Test
+  </button>
+
+  <div class="credit">
+    Created by Raja – Student of Sacred Heart Model School
+  </div>
+
+</div>
+
+<script>
+// Add the confirmed test date here later.
+// Format: YYYY-MM-DDTHH:MM:SS
+const TEST_START_DATE = "";
+
+function updateTestPage() {
+  const startButton = document.getElementById("startButton");
+  const status = document.getElementById("testStatus");
+
+  if (!TEST_START_DATE) {
+    startButton.hidden = true;
+    return;
+  }
+
+  const now = new Date();
+  const startDate = new Date(TEST_START_DATE);
+
+  if (now >= startDate) {
+    status.innerHTML = "🎉 The Annual Grand Test has started!";
+    startButton.hidden = false;
+  } else {
+    status.innerHTML =
+      "📅 Grand Test will start on " +
+      startDate.toLocaleString();
+    startButton.hidden = true;
+  }
+}
+
+updateTestPage();
+</script>
+
+</body>
+  </html>
